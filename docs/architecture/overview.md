@@ -17,7 +17,8 @@ HBR-Auto 是面向《Heaven Burns Red / 绯染天空》的模块化 Python 自�
 5. **识别后再操作**：所有会改变游戏状态的动作都必须有执行前条件和执行后验证。
 6. **单设备串行输入**：同一设备上的截图、点击、滑动和识别请求由单一执行队列协调，避免并发操作造成画面与输入错位。
 7. **计划与现实分离**：排轴是期望计划，游戏当前画面识别结果才代表运行时状态。两者不一致时默认暂停。
-8. **安全边界**：仅使用正常游戏画面识别和设备输入；不实现进程注入、内存修改或网络协议绕过。
+8. **先战前准备、后战斗执行**：导入排轴后必须先生成 PartyProfile / RequiredSkill，比较并调整游戏当前编队及技能设置；PreBattlePreparation 未达到 READY 时，禁止启动 BattlePlanRunner。
+9. **安全边界**：仅使用正常游戏画面识别和设备输入；不实现进程注入、内存修改或网络协议绕过。
 
 ## 3. 系统分层
 
@@ -26,6 +27,7 @@ flowchart TB
     APP[Application / CLI]
     SCHED[Task Scheduler]
     FEATURES[Game Features]
+    PREP[PreBattlePreparation]
     STATE[Game State]
     SCENE[Scene Manager / Navigator]
     STRATEGY[Strategy Engine]
@@ -39,6 +41,10 @@ flowchart TB
     FEATURES --> STATE
     FEATURES --> SCENE
     FEATURES --> STRATEGY
+    FEATURES --> PREP
+    PREP --> SCENE
+    PREP --> VISION
+    PREP --> DEVICE
     SCENE --> VISION
     FEATURES --> VISION
     FEATURES --> DEVICE
@@ -66,7 +72,7 @@ flowchart TB
 
 - common：登录、回到主界面、通用弹窗和导航。
 - daily：每日任务、签到和奖励。
-- battle：排轴导入、队伍校验、战斗状态分析和排轴执行。
+- battle：排轴导入、战前编队与技能准备、队伍校验、战斗状态分析和排轴执行。
 - dungeon：地图识别、地图状态和路线规划。
 - event：活动玩法。
 
@@ -114,6 +120,7 @@ flowchart TB
     │   ├── daily/
     │   ├── battle/
     │   │   ├── plan/
+    │   │   ├── preparation/
     │   │   ├── analyzer/
     │   │   └── runtime/
     │   ├── dungeon/
@@ -162,7 +169,7 @@ flowchart TB
 
 ## 8. 数据与可观测性
 
-- SQLite：任务历史、排轴导入记录、检查点和异常记录。
+- SQLite：任务历史、排轴导入记录、战前准备报告、检查点和异常记录。
 - 文件日志：应用、任务、识别和设备日志分层。
 - 失败截图：按任务 ID 和时间戳保存，并控制保留数量。
 - 识别记录：记录算法类型、区域、阈值、命中结果和耗时；不无限期保留完整截图。
@@ -170,8 +177,8 @@ flowchart TB
 
 ## 9. 关键质量属性
 
-- 可测试：识别、场景、计划验证和策略可使用截图及状态 fixture 离线测试。
+- 可测试：识别、场景、计划验证、战前差异计算和策略可使用截图及状态 fixture 离线测试。
 - 可恢复：状态不确定时暂停，而不是猜测。
 - 可扩展：新增功能优先新增 Feature，不修改 MaaRuntime。
 - 可替换：Maa 类型只存在于 Adapter。
-- 可追踪：每个输入动作均可追溯到任务、回合、动作槽位和识别证据。
+- 可追踪：每个输入动作均可追溯到任务、阶段、回合、动作槽位和识别证据。
