@@ -1,0 +1,32 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+*.so
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# uv / virtual environments
+.venv/
+.uv/
+uv-cache/
+
+# Runtime data
+data/*
+!data/.gitkeep
+storage/*
+!storage/.gitkeep
+logs/*
+!logs/.gitkeep
+screenshots/
+recognition-debug/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
