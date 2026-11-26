@@ -9,8 +9,10 @@
 3. 使用与 JavaScript lz-string@1.5.0 兼容的 LZ-String Base64 解压算法。
 4. 验证 JSON 结构和格式版本。
 5. 执行迁移与规范化，形成内部 BattlePlan。
-6. 显示排轴预览和校验报告。
-7. 用户确认后才允许进入战斗执行阶段。
+6. 从 BattlePlan 编译战前准备方案，包括一个或多个 PartyProfile 及所需技能集合。
+7. 显示排轴预览、目标队伍和技能配置差异。
+8. 用户确认准备方案后，逐项调整并验证。
+9. 只有战前准备达到 READY，才允许进入战斗执行阶段。
 
 图片本身用于预览和留档；排轴语义从 EXIF 元数据读取。不得把 OCR 识别图片上的文字作为权威数据源。
 
@@ -72,6 +74,12 @@ char 结构：
 
 getUsedTeams() 从行动槽位的 selectedTab 收集实际使用的 Tab；未被行动轴引用的其他队伍可能不会写入导出数据。
 
+char 中的 passiveSkill 与 skills 中的 skill 是不同概念：
+
+- char[teamTab][slot].passiveSkill 是角色已选择的被动技能列表，供战前技能槽配置校验。
+- skills[rowIndex][actionSlot].skill 是某个回合要主动使用的技能 value，供战斗中的技能选择执行。
+- char 中被删除的 skill / commandSkill 等字段是上游恢复 UI 选项用的数据，不代表导出缺失了行动轴中的主动技能。
+
 ## 5. 回合与行动槽位
 
 skills 为二维数组，结构是 skills[rowIndex][actionSlot]。当前编辑器每行初始化三个行动槽位，索引为 0、1、2。
@@ -85,8 +93,8 @@ skills 为二维数组，结构是 skills[rowIndex][actionSlot]。当前编辑�
 | style_id | 战型数据 ID；历史格式可能缺失 |
 | activeFormId | 多形态战型当前形态；历史格式可能缺失 |
 | style_img | AxleTool 预览资源路径，不是游戏内角色身份的权威字段 |
-| skill | 所选技能的 value 字符串，不是本地化显示文字 |
-| target | 目标角色选项的 value；需在当前队伍中解析 |
+| skill | 所选主动技能的 value 字符串，不是本地化显示文字 |
+| target | 目标角色选项的 value；需在当前队伍中解析，属于战斗时目标选择 |
 | is1Damage | 伤害上限标记，布尔值 |
 
 turns[rowIndex] 与 skills[rowIndex] 通过相同索引对应。常见字段：
@@ -114,6 +122,7 @@ AxleTool 在将回合改为 Switch 时，会清空该行三个行动槽位并清
       -> schema check
       -> version migration
       -> normalized BattlePlan
+      -> PreparationPlan
 
 上游当前通过 piexifjs 将压缩字符串直接赋给 UserComment。实现时应针对真实上游 JPG fixture 确认 Python piexif.load() 返回的类型和内容。不要无条件剥离前缀；只有确认存在 ASCII\0\0\0 前缀时才去除。
 
@@ -139,8 +148,9 @@ LZ-String 的 Base64 字符串不是让应用自行用 base64.b64decode 解码�
 因此本项目需要一个版本化 AxleCatalog：
 
 - 根据 team / character / style 查找角色和战型元数据。
-- 根据行动槽位中的技能 value 解析技能定义与 SP 消耗（如果目录中有提供）。
-- 处理通用技能、战型技能、指挥技能和多形态技能。
+- 根据行动槽位中的主动技能 value 解析技能定义、类别与 SP 消耗（如果目录中有提供）。
+- 根据 char 中 passiveSkill 的 value 解析被动技能定义。
+- 区分普通主动技能、EX 技能、Switch 技能、指挥技能、被动技能和多形态技能。
 - 处理多语言名称，但内部使用稳定 value/id，不以展示名作为主键。
 
 角色目录数据的引入和再分发需要单独核对上游 MIT 代码许可及其中游戏素材和数据的权利边界。首版优先实现可替换 Catalog 接口，不在未审核前批量复制上游图片资源。
@@ -155,6 +165,7 @@ JPG 和 EXIF 元数据都视为不可信输入：
 - 解压失败、JSON 无效、字段类型错误必须给出明确错误。
 - 对数组长度、行数、技能槽数量和字符串长度设置上限。
 - 校验 teamTab、character、style、skill、target 引用关系。
+- 区分被动技能列表与行动轴主动技能。
 - 不执行或反序列化 Python 对象；只处理 JSON。
 - 未知格式版本 fail closed。
 
@@ -162,7 +173,9 @@ JPG 和 EXIF 元数据都视为不可信输入：
 
 1. 使用真实 AxleTool 导出 JPG fixture，能读取 UserComment。
 2. Python 解压结果与浏览器端 decompressFromBase64 解析的 JSON 结构一致。
-3. 队伍、角色、回合、OD、技能和目标的数组索引关系保持不变。
+3. 队伍、角色、被动技能、回合、OD、主动技能和目标的引用关系保持不变。
 4. 空槽位、Switch、追加回合和 OD Bonus 都能无损表达。
 5. 不支持的版本和损坏 EXIF 有可读错误。
-6. 导入不需要连接 MAA 或启动游戏。
+6. 能从一个或多个 teamTab 生成独立 PartyProfile。
+7. 能汇总排轴主动技能需求，并和角色被动技能数据明确区分。
+8. 导入不需要连接 MAA 或启动游戏。
