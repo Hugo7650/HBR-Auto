@@ -8,3 +8,4 @@
 | [ADR-0002](ADR-0002-maa-native-vision.md) | 优先使用 MaaFramework Native Vision | Accepted |
 | [ADR-0003](ADR-0003-uv-python-315.md) | 使用 uv，目标 Python 3.15.2 | Accepted |
 | [ADR-0004](ADR-0004-axletool-battle-plan.md) | AxleTool EXIF 排轴作为外部战斗计划输入 | Accepted |
+| [ADR-0005](ADR-0005-prebattle-party-and-skill-setup.md) | 开战前按排轴核对并调整编队和技能配置 | Accepted |
