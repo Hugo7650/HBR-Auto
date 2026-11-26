@@ -1,0 +1,160 @@
+{
+  "version": "1.0.1",
+  "char": {
+    "1": {
+      "1": {
+        "character": "char-001",
+        "team": "31A",
+        "style": "style-001",
+        "style_id": "style-id-001",
+        "rank": "SS",
+        "flower": false,
+        "passiveSkill": [
+          "passive-001"
+        ],
+        "earring": null,
+        "spiritual": null,
+        "reincarnation": null,
+        "support": {
+          "team": null,
+          "character": null,
+          "style": null,
+          "style_id": null,
+          "img": null,
+          "rank": null,
+          "crucial": false
+        }
+      },
+      "2": {
+        "character": null,
+        "team": null,
+        "style": null,
+        "style_id": null,
+        "passiveSkill": [],
+        "support": {
+          "team": null,
+          "character": null,
+          "style": null,
+          "style_id": null,
+          "img": null,
+          "rank": null,
+          "crucial": false
+        }
+      },
+      "3": {
+        "character": null,
+        "team": null,
+        "style": null,
+        "style_id": null,
+        "passiveSkill": [],
+        "support": {
+          "team": null,
+          "character": null,
+          "style": null,
+          "style_id": null,
+          "img": null,
+          "rank": null,
+          "crucial": false
+        }
+      },
+      "4": {
+        "character": null,
+        "team": null,
+        "style": null,
+        "style_id": null,
+        "passiveSkill": [],
+        "support": {
+          "team": null,
+          "character": null,
+          "style": null,
+          "style_id": null,
+          "img": null,
+          "rank": null,
+          "crucial": false
+        }
+      },
+      "5": {
+        "character": null,
+        "team": null,
+        "style": null,
+        "style_id": null,
+        "passiveSkill": [],
+        "support": {
+          "team": null,
+          "character": null,
+          "style": null,
+          "style_id": null,
+          "img": null,
+          "rank": null,
+          "crucial": false
+        }
+      },
+      "6": {
+        "character": null,
+        "team": null,
+        "style": null,
+        "style_id": null,
+        "passiveSkill": [],
+        "support": {
+          "team": null,
+          "character": null,
+          "style": null,
+          "style_id": null,
+          "img": null,
+          "rank": null,
+          "crucial": false
+        }
+      }
+    }
+  },
+  "axleName": "Offline fixture",
+  "skills": [
+    [
+      {
+        "selectedTab": 1,
+        "style": "style-001",
+        "style_id": "style-id-001",
+        "activeFormId": "form-001",
+        "skill": "skill-001",
+        "target": "char-001",
+        "is1Damage": false
+      },
+      {},
+      {}
+    ],
+    [
+      {},
+      {},
+      {}
+    ],
+    [
+      {
+        "selectedTab": 1,
+        "style": "style-001",
+        "style_id": "style-id-001",
+        "activeFormId": "form-001",
+        "skill": "skill-001",
+        "target": "char-001",
+        "is1Damage": false
+      },
+      {},
+      {}
+    ]
+  ],
+  "turns": [
+    {
+      "turn": "T1",
+      "od": "OD1/Bonus1"
+    },
+    {
+      "turn": "Switch",
+      "od": null
+    },
+    {
+      "turn": "追加回合",
+      "od": "OD2"
+    }
+  ],
+  "rows": 3,
+  "language": "ja"
+}

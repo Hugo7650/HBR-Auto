@@ -1,4 +1,3 @@
-
 # Python
 __pycache__/
 *.py[cod]
@@ -24,6 +23,12 @@ logs/*
 !logs/.gitkeep
 screenshots/
 recognition-debug/
+imports/
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
 
 # Editors / OS
 .idea/
